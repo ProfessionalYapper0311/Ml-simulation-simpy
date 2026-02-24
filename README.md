@@ -1,54 +1,61 @@
-# Bank Teller Queue Simulation & Wait Time Prediction
+# Synthetic Data Generation and ML Prediction for Queueing Systems
 
-**Student:** Rupam
-**Roll No:** 102317201
-**Institution:** Thapar Institute of Engineering and Technology
+## Project Synopsis
+This repository contains a complete pipeline for generating synthetic data via Modeling and Simulation (M&S), followed by the application of Machine Learning algorithms for predictive analysis. The project simulates a multi-server bank queue environment to analyze how fluctuating arrival and service rates impact customer wait times, which is then used to train regression models.
 
-## Assignment Objective
-The goal of this project is to use modeling and simulation to generate synthetic data for a queueing system, and then apply Machine Learning models to predict the target variable based on the generated simulation parameters.
+## Architecture & Workflow
 
-## Methodology
+### Phase 1: Discrete Event Simulation
 
-### 1. Data Generation (Simulation Setup)
-The simulation was built using the `simpy` library to model a bank teller queue. The objective was to observe how different parameters affect a customer's `mean_wait` time. 
-To generate a diverse dataset, 1000 independent simulations were run using randomized parameters within the following bounds:
-* **Arrival Rate (`arr_rate`):** 0.5 to 5.0
-* **Service Rate (`srv_rate`):** 0.5 to 5.0
-* **Number of Tellers (`tellers`):** 1 to 5
-* **Total Duration (`duration`):** 60 to 300 minutes
+To generate realistic synthetic data, a multi-server queue (M/M/c model) was developed using the Python framework **SimPy**. The simulation processes dynamic customer arrivals and server (teller) availability over a defined duration. 
 
-For each of the 1000 simulation runs, the generated parameters and the resulting `mean_wait` time were recorded and compiled into a pandas DataFrame (`simul_data.csv`).
+To build a robust dataset consisting of 1,000 unique scenarios, the simulation parameters were randomly sampled from the following continuous and discrete uniform distributions:
 
-### 2. Machine Learning Evaluation
-The generated dataset was treated as a regression task, where the goal was to predict the `mean_wait` time using `arr_rate`, `srv_rate`, `tellers`, and `duration` as input features. 
-* **Preprocessing:** The data was split into an 80/20 train-test set. Features were normalized using `StandardScaler` to ensure algorithms sensitive to scale (like KNN and SVM) performed optimally.
-* **Model Training:** 10 different scikit-learn regression models were evaluated (Linear Regression, Ridge, Lasso, Decision Tree, Random Forest, Gradient Boosting, Extra Trees, SVM, KNN, and MLP).
-* **Evaluation Metrics:** The models were compared using Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and R-squared ($R^2$) scores.
-
-## Result Table
-Below are the evaluation results of the 10 tested models, sorted by highest $R^2$ score. Ensemble tree-based models significantly outperformed standard linear models.
-
-| Model | RMSE | MAE | $R^2$ Score |
+| Variable Name | Description | Lower Bound | Upper Bound |
 | :--- | :--- | :--- | :--- |
-| **ExtraTrees** | 3.884 | 1.393 | 0.955 |
-| **Random Forest (RF)** | 5.010 | 1.824 | 0.926 |
-| **Gradient Boosting (GBM)** | 5.820 | 2.757 | 0.900 |
-| **MLP (Neural Net)** | 6.044 | 2.841 | 0.892 |
-| **KNN** | 6.059 | 2.205 | 0.892 |
-| **Decision Tree (DT)** | 7.130 | 2.354 | 0.850 |
-| **Linear Regression** | 14.146 | 8.835 | 0.413 |
-| **Ridge** | 14.147 | 8.831 | 0.412 |
-| **Lasso** | 14.493 | 8.251 | 0.383 |
-| **SVM** | 14.643 | 4.666 | 0.371 |
+| `arr_rate` | Customer arrival rate (Exponential distribution parameter) | 0.5 | 5.0 |
+| `srv_rate` | Teller service rate (Exponential distribution parameter) | 0.5 | 5.0 |
+| `tellers` | Count of active bank tellers | 1 | 5 |
+| `duration` | Total simulation runtime (minutes) | 60 | 300 |
 
-## Result Graphs Explanation
+**Target Variable:** The dependent variable extracted from each run is `mean_wait`, representing the average time customers spent waiting in the queue.
 
-Three primary visualizations were generated to analyze both the raw simulation data and the model performance:
+### Phase 2: Predictive Modeling
+The generated dataset (`simul_data.csv`) was preprocessed using standard scaling and split into an 80/20 train-test distribution. The objective was to predict the non-linear `mean_wait` metric using 10 different regression algorithms from `scikit-learn`:
 
-1.  **Exploratory Data Analysis (`eda_plots.png`):** * *Wait Times Distribution:* Shows a heavy right-skew, indicating that in most simulated scenarios, the wait time is very low, but certain combinations (like high arrival rate + low tellers) cause exponential wait time spikes.
-    * *Wait Time by Tellers:* A scatter plot demonstrating the inverse relationship between the number of tellers and the mean wait time. Wait times drop significantly as teller capacity increases.
-2.  **Model Comparison (`model_comparison.png`):** A horizontal bar chart visually comparing the $R^2$ scores of all 10 models. It clearly highlights that ExtraTrees and Random Forest captured the non-linear dynamics of the queueing system far better than linear approaches.
-3.  **Actual vs. Predicted - ExtraTrees (`actual_vs_predicted.png`):** A scatter plot comparing the actual test set wait times against the predictions made by the best-performing model (ExtraTrees). The predictions map closely to the red dashed ideal-fit line, proving the model successfully learned the underlying queueing mechanics.
+* **Ensemble Methods:** Random Forest, Gradient Boosting, Extra Trees
+* **Linear Models:** Linear Regression, Ridge, Lasso
+* **Other Estimators:** Support Vector Regressor (SVM), K-Nearest Neighbors (KNN), Decision Tree, Multi-Layer Perceptron (MLP)
 
-## Conclusion
-The simulation successfully generated non-linear queueing data. Among the evaluated algorithms, the **ExtraTreesRegressor** was the best-performing model, achieving an $R^2$ score of **0.955**, proving highly capable of predicting customer wait times based on simple queue parameters.
+## Experimental Results
+
+The models were evaluated using Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and $R^2$ scores. Below is a summary of the top-performing models compared against standard linear baselines:
+
+| Algorithm | $R^2$ Score | RMSE | MAE |
+| :--- | :--- | :--- | :--- |
+| **ExtraTrees Regressor** | 0.955 | 3.884 | 1.393 |
+| **Random Forest** | 0.926 | 5.010 | 1.824 |
+| **Gradient Boosting** | 0.900 | 5.820 | 2.757 |
+| **MLP Neural Network** | 0.892 | 6.044 | 2.841 |
+| **Linear Regression** | 0.413 | 14.146 | 8.835 |
+
+### Graphical Analysis
+*(Note: Images are generated and saved automatically upon running the notebook)*
+* `eda_plots.png`: Displays the heavy right-skewed distribution of wait times and the inverse correlation between teller count and wait duration.
+* <img width="1256" height="518" alt="image" src="https://github.com/user-attachments/assets/0564991d-af45-46c4-924a-aac41dc87fc5" />
+* `model_comparison.png`: A bar chart ranking algorithm performance.
+* <img width="589" height="318" alt="image" src="https://github.com/user-attachments/assets/7d6dd103-168a-491e-ae86-9edd9b5e2c70" />
+* `actual_vs_predicted.png`: Maps the ExtraTrees model's predicted wait times against the true simulated values.
+* <img width="494" height="344" alt="image" src="https://github.com/user-attachments/assets/2485b982-5f85-47f2-af7f-04e56616246d" />
+
+
+## Key Takeaways
+Standard linear models performed poorly ($R^2$ ~ 0.41) because queueing systems exhibit exponential, non-linear wait time spikes when arrival rates exceed service capacities. The **ExtraTrees Regressor** successfully captured these complex interactions, achieving the highest accuracy with an $R^2$ score of 0.955.
+
+## Execution Guide
+Unlike multi-script architectures, this pipeline is contained entirely within a single Jupyter environment for ease of execution.
+
+1.  Clone the repository.
+2.  Open `ml-simul.ipynb` in Google Colab or a local Jupyter Notebook environment.
+3.  Ensure the required libraries are installed: `pip install simpy pandas numpy scikit-learn matplotlib seaborn`
+4.  Run all cells sequentially. The notebook will automatically execute the 1,000 simulations, train the models, and export the `.csv` results and `.png` plots to your working directory.
