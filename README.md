@@ -41,11 +41,16 @@ The models were evaluated using Root Mean Squared Error (RMSE), Mean Absolute Er
 
 ### Graphical Analysis
 *(Note: Images are generated and saved automatically upon running the notebook)*
- *`eda_plots.png`: Displays the heavy right-skewed distribution of wait times and the inverse correlation between teller count and wait duration.
+*`eda_plots.png`: Displays the heavy right-skewed distribution of wait times and the inverse correlation between teller count and wait duration.
+ 
  <img width="1256" height="518" alt="image" src="https://github.com/user-attachments/assets/0564991d-af45-46c4-924a-aac41dc87fc5" />
- * `model_comparison.png`: A bar chart ranking algorithm performance.
+ 
+*`model_comparison.png`: A bar chart ranking algorithm performance.
+
  <img width="589" height="318" alt="image" src="https://github.com/user-attachments/assets/7d6dd103-168a-491e-ae86-9edd9b5e2c70" />
- *`actual_vs_predicted.png`: Maps the ExtraTrees model's predicted wait times against the true simulated values.
+ 
+*`actual_vs_predicted.png`: Maps the ExtraTrees model's predicted wait times against the true simulated values.
+
  <img width="494" height="344" alt="image" src="https://github.com/user-attachments/assets/2485b982-5f85-47f2-af7f-04e56616246d" />
 
 
